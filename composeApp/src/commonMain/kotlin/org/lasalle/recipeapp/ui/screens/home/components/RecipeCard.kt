@@ -62,7 +62,7 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
                 .align(Alignment.TopStart)
                 .padding(16.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(colors.onSurface)
+                .background(colors.primary)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -70,12 +70,12 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = "Rating",
-                tint = Color.Black,
+                tint = Color.White,
                 modifier = Modifier.size(18.dp)
             )
             Text(
                 text = recipe.stars.toString(),
-                color = Color.Black,
+                color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -83,12 +83,12 @@ fun RecipeCard(recipe: Recipe, onClick: () -> Unit) {
             Icon(
                 imageVector = Icons.Default.Schedule,
                 contentDescription = "Time",
-                tint = Color.Black,
+                tint = Color.White,
                 modifier = Modifier.size(18.dp)
             )
             Text(
                 text = "${recipe.minutes} min",
-                color = Color.Black,
+                color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )

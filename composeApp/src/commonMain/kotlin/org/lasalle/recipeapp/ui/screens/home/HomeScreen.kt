@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +62,7 @@ import org.lasalle.recipeapp.ui.components.LoadingOverlay
 import org.lasalle.recipeapp.ui.screens.home.components.RecipeCard
 import org.lasalle.recipeapp.ui.viewmodels.HomeViewModel
 import org.lasalle.recipeapp.utils.hideKeyboard
+import recipeapp.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,10 +93,12 @@ fun HomeScreen() {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "Hola"
+                        text = "Hola",
+                        fontWeight = FontWeight.Light
                     )
                     Text(
-                        text = "Fernanda Ballesteros"
+                        text = "Fernanda Ballesteros",
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 Box(
@@ -130,11 +134,15 @@ fun HomeScreen() {
         item {
             Spacer(Modifier.height(15.dp))
             Text(
-                text = "Crea, cocina, comparte y disfruta"
+                text = "Crea, cocina, comparte y disfruta",
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
             )
 
             OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 value = vm.ingredients,
                 onValueChange = { vm.ingredients = it },
                 shape = CircleShape,
@@ -188,9 +196,10 @@ fun HomeScreen() {
 
         // tus recetas recientes
         item {
-            Text(text = "Tus recetas recientes", color = colors.onSurface)
+            Text(text = "Tus recetas recientes", color = colors.onSurface,  fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
             LazyRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(vm.recentRecipes) { recipe ->
@@ -221,7 +230,8 @@ fun HomeScreen() {
         }
 
         //ideas rapidas
-        item {
+        item() {
+            Spacer(Modifier.height(15.dp))
             val tags = listOf(
                 "Rapidas (10 min)",
                 "Pocas calorias",
@@ -230,7 +240,9 @@ fun HomeScreen() {
             )
             Text(
                 text = "Ideas Rapidas",
-                color = colors.onSurface
+                color = colors.onSurface,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
             )
 
             Spacer(Modifier.height(10.dp))
