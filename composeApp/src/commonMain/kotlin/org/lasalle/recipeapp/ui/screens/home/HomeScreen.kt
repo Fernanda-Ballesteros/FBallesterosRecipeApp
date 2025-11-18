@@ -24,6 +24,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.LockClock
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -304,6 +306,92 @@ fun HomeScreen() {
                 }
             }
         }
+
+        // todas tus recetas
+        item {
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = "Todas tus recetas",
+                color = colors.onSurface,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(12.dp))
+        }
+
+        items(vm.recentRecipes) { recipe ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(container)
+                    .clickable {
+                        scope.launch {
+                            val recipePreview = RecipePreview(
+                                title = recipe.title,
+                                category = recipe.category,
+                                minutes = recipe.minutes,
+                                ingredients = recipe.ingredients,
+                                instructions = recipe.instructions,
+                                imageUrl = recipe.imageUrl,
+                                stars = recipe.stars,
+                                prompt = ""
+                            )
+                            vm.showModalFromList(recipe = recipePreview)
+                            sheetState.partialExpand()
+                        }
+                    }
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = recipe.imageUrl,
+                    contentDescription = recipe.title,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = recipe.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.onSurface,
+                        maxLines = 2
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = recipe.category,
+                        fontSize = 14.sp,
+                        color = colors.onSurfaceVariant
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Schedule,
+                        contentDescription = null,
+                        tint = colors.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "${recipe.minutes}",
+                        fontSize = 14.sp,
+                        color = colors.onSurface
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+        //
     }
 
     if(vm.isLoading){
@@ -321,91 +409,188 @@ fun HomeScreen() {
             sheetState = sheetState,
         ){
             Column (
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
+                    .padding(bottom = 40.dp)
             ){
                 AsyncImage(
                     model = vm.generatedRecipe?.imageUrl,
                     contentDescription = vm.generatedRecipe?.title,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp)
-                        .clip(RoundedCornerShape(16.dp)),
+                        .padding(10.dp)
+                        .height(240.dp)
+                        .clip(RoundedCornerShape(10.dp)),
                     contentScale = ContentScale.Crop
                 )
-                Spacer(Modifier.height(16.dp))
-                Text(vm.generatedRecipe?.title ?: "Sin titulo",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    , color = colors.onSurface)
-            }
-            Spacer(Modifier.height(16.dp))
-            Row(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(colors.primary.copy(alpha = 0.15f))
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ){
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null
-                )
-                Text(
-                    text = "${vm.generatedRecipe?.stars}"
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Ingredientes",
-                color = colors.onSurface,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(Modifier.height(16.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ){
-                val ingredients = vm.generatedRecipe?.ingredients ?: listOf()
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp)
                 ) {
-                    ingredients.forEachIndexed { index, ingredient ->
+                    Spacer(Modifier.height(16.dp))
+
+                    Text(
+                        text = vm.generatedRecipe?.title ?: "Sin titulo",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = colors.onSurface
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.Top
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(colors.primary.copy(alpha = 0.15f))
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .clip(CircleShape)
-                                    .background(colors.primary),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "${index + 1}",
-                                    color = Color.White,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = colors.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
                             Text(
-                                text = ingredient,
-                                modifier = Modifier.weight(1f),
-                                color = colors.onSurface,
+                                text = "${vm.generatedRecipe?.stars}",
+                                color = colors.primary,
                                 fontSize = 14.sp,
-                                lineHeight = 20.sp
+                                fontWeight = FontWeight.Medium
+                            )
+
+                            Icon(
+                                imageVector = Icons.Default.Schedule,
+                                contentDescription = null,
+                                tint = colors.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+
+                            Text(
+                                text = "${vm.generatedRecipe?.minutes} min",
+                                color = colors.primary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+
+                            Text(
+                                text = vm.generatedRecipe?.category ?: "",
+                                color = colors.primary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
-                }
 
+                    Spacer(Modifier.height(24.dp))
+
+                    Text(
+                        text = "Ingredientes",
+                        fontSize = 18.sp,
+                        color = colors.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    val ingredients = vm.generatedRecipe?.ingredients ?: listOf()
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ingredients.forEachIndexed { index, ingredient ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(colors.primary.copy(alpha = 0.08f))
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = ingredient,
+                                    modifier = Modifier.weight(1f),
+                                    color = colors.primary,
+                                    fontSize = 14.sp,
+                                    lineHeight = 20.sp
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Text(
+                        text = "Preparación",
+                        fontSize = 18.sp,
+                        color = colors.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    val instructions = vm.generatedRecipe?.instructions ?: listOf()
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        instructions.forEachIndexed { index, instruction ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
+
+                                    Text(
+                                        text = "${index + 1}",
+                                        color = colors.primary,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                Text(
+                                    text = instruction,
+                                    modifier = Modifier.weight(1f),
+                                    color = colors.onSurface,
+                                    fontSize = 14.sp,
+                                    lineHeight = 22.sp
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(28.dp))
+                            .background(colors.primary)
+                            .clickable {
+                                scope.launch {
+                                    vm.showSheet = false
+                                    sheetState.hide()
+                                }
+                            }
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Cerrar",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }
