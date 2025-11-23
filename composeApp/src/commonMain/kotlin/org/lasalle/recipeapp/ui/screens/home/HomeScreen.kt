@@ -6,7 +6,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,9 +23,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.LockClock
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,38 +36,36 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.lasalle.recipeapp.models.RecipePreview
+import org.lasalle.recipeapp.ui.HomeScreenRoute
+import org.lasalle.recipeapp.ui.LoginScreenRoute
 import org.lasalle.recipeapp.ui.RecipeTheme
 import org.lasalle.recipeapp.ui.components.LoadingOverlay
 import org.lasalle.recipeapp.ui.screens.home.components.RecipeCard
 import org.lasalle.recipeapp.ui.viewmodels.HomeViewModel
 import org.lasalle.recipeapp.utils.hideKeyboard
-import recipeapp.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavController
+) {
     val colors = MaterialTheme.colorScheme
     val container = if (isSystemInDarkTheme()) colors.surface else Color.White
     val vm: HomeViewModel = viewModel()
@@ -96,11 +93,11 @@ fun HomeScreen() {
                 ) {
                     Text(
                         text = "Hola",
-                        fontWeight = FontWeight.Light
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
                         text = "Fernanda Ballesteros",
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
                 Box(
@@ -119,7 +116,14 @@ fun HomeScreen() {
                 }
 
                 IconButton(
-                    onClick = {}
+                    onClick = {
+                        vm.logout()
+                        navController.navigate(LoginScreenRoute){
+                            popUpTo(HomeScreenRoute){
+                                inclusive = true
+                            }
+                        }
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Logout,
@@ -130,7 +134,7 @@ fun HomeScreen() {
 
 
             }
-        }//
+        }
 
         // Generate Recipe
         item {
@@ -138,7 +142,8 @@ fun HomeScreen() {
             Text(
                 text = "Crea, cocina, comparte y disfruta",
                 fontWeight = FontWeight.Bold,
-                fontSize = 30.sp
+                fontSize = 30.sp,
+                style = MaterialTheme.typography.displaySmall
             )
 
             OutlinedTextField(
@@ -149,7 +154,7 @@ fun HomeScreen() {
                 onValueChange = { vm.ingredients = it },
                 shape = CircleShape,
                 singleLine = true,
-                placeholder = { Text("Escribe tus ingredientes...") },
+                placeholder = { Text("Escribe tus ingredientes...", style = MaterialTheme.typography.labelLarge) },
                 trailingIcon = {
                     IconButton(
                         onClick = {
@@ -198,7 +203,7 @@ fun HomeScreen() {
 
         // tus recetas recientes
         item {
-            Text(text = "Tus recetas recientes", color = colors.onSurface,  fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            Text(text = "Tus recetas recientes", color = colors.onSurface, style = MaterialTheme.typography.titleLarge)
             LazyRow(
                 modifier = Modifier.fillMaxWidth()
                     .padding(10.dp),
@@ -242,6 +247,7 @@ fun HomeScreen() {
             )
             Text(
                 text = "Ideas Rapidas",
+                style = MaterialTheme.typography.titleLarge,
                 color = colors.onSurface,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold
@@ -284,15 +290,14 @@ fun HomeScreen() {
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = "¿No sabes qué cocinar hoy?",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
+                            text = "¿No sabes qué cocinar hoy?" ,
+                            style = MaterialTheme.typography.titleMedium,
                             color = colors.onSurface
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = "Genera una receta aleatoria",
-                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = colors.onSurfaceVariant
                         )
                     }
@@ -312,9 +317,8 @@ fun HomeScreen() {
             Spacer(Modifier.height(24.dp))
             Text(
                 text = "Todas tus recetas",
-                color = colors.onSurface,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                        style = MaterialTheme.typography.titleLarge,
+                color = colors.onSurface
             )
             Spacer(Modifier.height(12.dp))
         }
@@ -351,8 +355,11 @@ fun HomeScreen() {
                     modifier = Modifier
                         .size(60.dp)
                         .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
+
+
+
 
                 Column(
                     modifier = Modifier.weight(1f)
@@ -569,6 +576,17 @@ fun HomeScreen() {
 
                     Spacer(Modifier.height(24.dp))
 
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                            }
+                            vm.saveRecipeInDb()
+                        }
+                    ){
+                       Text("Guardar")
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -590,6 +608,9 @@ fun HomeScreen() {
                             fontWeight = FontWeight.Bold
                         )
                     }
+
+
+
                 }
             }
         }
@@ -601,6 +622,8 @@ fun HomeScreen() {
 @Composable
 fun HomeScreenPreview(){
     RecipeTheme {
-        HomeScreen()
+        HomeScreen(
+            navController = rememberNavController()
+        )
     }
 }

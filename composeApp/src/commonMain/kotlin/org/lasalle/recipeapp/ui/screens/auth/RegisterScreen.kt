@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -21,15 +23,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.lasalle.recipeapp.ui.RecipeTheme
 import org.lasalle.recipeapp.ui.viewmodels.AuthViewModel
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavController) {
     val colors = MaterialTheme.colorScheme
     val authViewModel : AuthViewModel = viewModel()
     var name by remember {
@@ -71,28 +76,36 @@ fun RegisterScreen() {
                 text = "Crear Cuenta",
             )
             OutlinedTextField(
-                value = "name",
+                value = name,
                 onValueChange = { name = it},
                 placeholder = {
                     Text(text = "Nombre de usuario" )
                 }
             )
             OutlinedTextField(
-                value = "email",
+                value = email,
                 onValueChange = { email = it},
                 placeholder = {
                     Text(text = "Correo" )
                 }
             )
+
             OutlinedTextField(
-                value = "password",
-                onValueChange = { password = it},
+                value = password,
+                onValueChange = { password = it },
                 placeholder = {
-                    Text(text = "Contraseña" )
-                }
+                    Text(text = "Contraseña")
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = {}
+                )
             )
             OutlinedTextField(
-                value = "confirmedPassowrd",
+                value = confirmedPassword,
                 onValueChange = { confirmedPassword = it },
                 placeholder = {
                     Text(text = "Confirmar contraseña" )
@@ -135,6 +148,8 @@ fun RegisterScreen() {
 @Composable
 fun RegisterScreenPreview() {
     RecipeTheme {
-        RegisterScreen()
+        RegisterScreen(
+            navController = rememberNavController()
+        )
     }
 }

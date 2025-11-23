@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,18 +28,35 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.lasalle.recipeapp.ui.HomeScreenRoute
+import org.lasalle.recipeapp.ui.LoginScreenRoute
+import org.lasalle.recipeapp.ui.RecipeTheme
+import org.lasalle.recipeapp.ui.screens.home.HomeScreen
 import org.lasalle.recipeapp.ui.viewmodels.AuthViewModel
 
 @Composable
-fun LoginScreen(){
-    val colors = MaterialTheme.colorScheme
+fun LoginScreen(navController: NavController){ // authViewModel: AuthViewModel = viewModel()
+    //
     val authViewModel : AuthViewModel = viewModel()
+    val colors = MaterialTheme.colorScheme
     var email by remember {
         mutableStateOf("")
     }
     var password by remember {
         mutableStateOf("")
     }
+
+    LaunchedEffect(authViewModel.isLogged){
+        if (authViewModel.isLogged){
+            navController.navigate(HomeScreenRoute) {
+                popUpTo(LoginScreenRoute) { inclusive = true }
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -74,25 +92,40 @@ fun LoginScreen(){
                 .padding(horizontal = 20.dp)
                 .height(350.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(colors.surface),
+                .background(colors.surface)
+                .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         )
         {
             Text(
-                text = "Bienvenido"
+                text = "Bienvenido",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp)
             )
             OutlinedTextField(
                 value = email   ,
                 onValueChange = { email = it},
-                placeholder = { Text("Correo Electrónico") },
+                placeholder = {
+                    Text(
+                        "Correo Electrónico",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                              },
                 modifier = Modifier
                     .fillMaxWidth()
             )
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it},
-                placeholder = { Text("Contraseña", color = colors.onSurfaceVariant) },
+                placeholder = {
+                    Text(
+                        "Contraseña",
+                        color = colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelMedium,
+
+                    )
+                              },
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -101,16 +134,35 @@ fun LoginScreen(){
                 )
 
             )
-            Button(onClick = {
-                if(email.isBlank() || password.isBlank()) return@Button
-                authViewModel.login(
-                    email = email,
-                    password = password
-                )
 
-            }, colors = ButtonDefaults.buttonColors() ){
-                Text("Iniciar Sesión")
+            Button(
+                onClick = {
+                    if(email.isBlank() || password.isBlank()) {
+                        return@Button
+                    }
+                    authViewModel.login(
+                        email = email,
+                        password = password
+                    )
+                },
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors()
+            ) {
+                Text(
+                    "Iniciar Sesión",
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun LoginScreenPreview(){
+    RecipeTheme {
+        LoginScreen(
+        navController = rememberNavController()
+        )
     }
 }

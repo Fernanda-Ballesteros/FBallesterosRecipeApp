@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.lasalle.recipeapp.data.services.KtorfitFactory
+import org.lasalle.recipeapp.data.services.Preferences
 import org.lasalle.recipeapp.models.Prompt
 import org.lasalle.recipeapp.models.Recipe
 import org.lasalle.recipeapp.models.RecipePreview
@@ -19,7 +20,7 @@ class HomeViewModel : ViewModel() {
     var recentRecipes by mutableStateOf<List<Recipe>>(listOf())
     var recipes by mutableStateOf<List<Recipe>>(listOf())
     var showSheet by mutableStateOf(false )
-    val userId = 2
+    val userId = Preferences.getUserId()
     var isLoading by mutableStateOf(false)
 
     init {
@@ -73,9 +74,35 @@ class HomeViewModel : ViewModel() {
         generatedRecipe = recipe
     }
 
+    fun saveRecipeInDb(){
+        viewModelScope.launch {
+            val recipe = Recipe(
+                id = 0,
+                category = generatedRecipe?.category ?: "",
+                imageUrl = generatedRecipe?.imageUrl ?: "",
+                ingredients = generatedRecipe?.ingredients ?: listOf() ,
+                instructions = generatedRecipe?.instructions ?: listOf(),
+                userId = userId,
+                minutes = generatedRecipe?.minutes ?: 0,
+                stars = generatedRecipe?.stars ?: 0,
+                title = generatedRecipe?.title ?: ""
+
+            )
+            val result = recipeService.saveRecipeInDb(
+                recipe
+            )
+            showSheet = false
+            loadRecipes()
+        }
+    }
+
     fun hideModal(){
         showSheet = false
         generatedRecipe = null
+    }
+
+    fun logout(){
+        Preferences.clearPreferences()
     }
 
 }

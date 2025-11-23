@@ -1,5 +1,6 @@
 package org.lasalle.recipeapp.ui
 
+import PoppinsType
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ fun RecipeTheme(
 ){
     MaterialTheme(
         colorScheme = if (useDarkTheme) DarkColors else LightColors,
-        content = content
+        content = content,
+        typography = PoppinsType()
     )
 }
