@@ -10,7 +10,7 @@ import org.lasalle.recipeapp.models.RecipePreview
 
 interface RecipeService {
     @GET("recipes")
-    suspend fun getRecipesByUserId(@Query("userId")usrtId: Int): List<Recipe>
+    suspend fun getRecipesByUserId(@Query("userId")userId: Int): List<Recipe>
 
     @POST("recipes/ai-generate")
     suspend fun generateRecipe(@Body request: Prompt): RecipePreview
